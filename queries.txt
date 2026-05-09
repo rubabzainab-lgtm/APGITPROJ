@@ -1,0 +1,72 @@
+# NanoDB Workload File — TPC-H Benchmark Queries
+# 50 SQL-like queries ranging from simple SELECTs to complex multi-condition queries.
+# Format: one query per non-comment line.
+
+# ── Simple SELECTs ────────────────────────────────────────────────────────────
+SELECT * FROM customer WHERE c_custkey == 1
+SELECT * FROM customer WHERE c_custkey == 100
+SELECT * FROM customer WHERE c_custkey == 500
+SELECT * FROM customer WHERE c_custkey == 1000
+SELECT * FROM customer WHERE c_custkey == 5000
+SELECT * FROM orders WHERE o_orderkey == 1
+SELECT * FROM orders WHERE o_orderkey == 100
+SELECT * FROM orders WHERE o_orderkey == 500
+SELECT * FROM lineitem WHERE l_orderkey == 1
+SELECT * FROM lineitem WHERE l_orderkey == 50
+
+# ── Single-condition filters ───────────────────────────────────────────────────
+SELECT * FROM customer WHERE c_nationkey == 0
+SELECT * FROM customer WHERE c_nationkey == 5
+SELECT * FROM customer WHERE c_nationkey == 10
+SELECT * FROM customer WHERE c_acctbal > 9000
+SELECT * FROM customer WHERE c_acctbal < 0
+SELECT * FROM orders WHERE o_orderstatus == "O"
+SELECT * FROM orders WHERE o_orderstatus == "F"
+SELECT * FROM orders WHERE o_totalprice > 400000
+SELECT * FROM lineitem WHERE l_quantity > 45
+SELECT * FROM lineitem WHERE l_discount > 0.09
+
+# ── AND conditions ─────────────────────────────────────────────────────────────
+SELECT * FROM customer WHERE c_acctbal > 5000 AND c_nationkey == 3
+SELECT * FROM customer WHERE c_mktsegment == "BUILDING" AND c_acctbal > 1000
+SELECT * FROM customer WHERE c_nationkey == 1 AND c_acctbal > 500
+SELECT * FROM orders WHERE o_orderstatus == "O" AND o_totalprice > 300000
+SELECT * FROM lineitem WHERE l_discount > 0.05 AND l_tax > 0.05
+
+# ── OR conditions ──────────────────────────────────────────────────────────────
+SELECT * FROM customer WHERE c_nationkey == 0 OR c_nationkey == 1
+SELECT * FROM customer WHERE c_acctbal > 9500 OR c_acctbal < -500
+SELECT * FROM orders WHERE o_orderstatus == "F" OR o_orderstatus == "P"
+SELECT * FROM lineitem WHERE l_returnflag == "A" OR l_returnflag == "R"
+SELECT * FROM customer WHERE c_mktsegment == "AUTOMOBILE" OR c_mktsegment == "MACHINERY"
+
+# ── Complex conditions ─────────────────────────────────────────────────────────
+SELECT * FROM customer WHERE (c_acctbal > 5000 AND c_mktsegment == "BUILDING") OR c_nationkey == 15
+SELECT * FROM customer WHERE (c_nationkey == 2 OR c_nationkey == 3) AND c_acctbal > 0
+SELECT * FROM orders WHERE (o_totalprice > 200000 AND o_orderstatus == "O") OR o_shippriority == 0
+SELECT * FROM lineitem WHERE (l_discount > 0.07 AND l_tax > 0.06) OR l_linenumber == 1
+SELECT * FROM customer WHERE (c_acctbal > 8000 OR c_acctbal < -800) AND c_nationkey < 10
+
+# ── Arithmetic expressions ─────────────────────────────────────────────────────
+SELECT * FROM orders WHERE o_totalprice * 1.5 > 100000
+SELECT * FROM orders WHERE o_custkey % 2 == 0
+SELECT * FROM lineitem WHERE l_extendedprice * l_discount > 5000
+SELECT * FROM lineitem WHERE l_quantity * l_extendedprice > 1000000
+SELECT * FROM orders WHERE o_totalprice / 2 > 100000
+
+# ── Deep nested expressions ────────────────────────────────────────────────────
+SELECT * FROM orders WHERE ((o_totalprice * 1.5) > 100000 AND (o_custkey % 2 == 0)) OR (o_orderstatus != "O")
+SELECT * FROM customer WHERE ((c_acctbal > 5000 AND c_mktsegment == "BUILDING") OR c_nationkey == 15) AND c_custkey < 10000
+SELECT * FROM lineitem WHERE (l_discount > 0.05 AND l_tax > 0.04) AND (l_quantity > 10 OR l_linenumber == 1)
+SELECT * FROM orders WHERE (o_orderstatus == "F" OR o_orderstatus == "O") AND o_totalprice > 250000
+
+# ── INSERTs ────────────────────────────────────────────────────────────────────
+INSERT INTO customer (c_custkey, c_name, c_address, c_nationkey, c_phone, c_acctbal, c_mktsegment, c_comment) VALUES (99001, "TestCust001", "1 Test Ave", 1, "11-111-1111", 5000.00, "BUILDING", "test record")
+INSERT INTO customer (c_custkey, c_name, c_address, c_nationkey, c_phone, c_acctbal, c_mktsegment, c_comment) VALUES (99002, "TestCust002", "2 Test Blvd", 2, "22-222-2222", 6000.00, "AUTOMOBILE", "test record 2")
+
+# ── UPDATEs ────────────────────────────────────────────────────────────────────
+UPDATE customer SET c_acctbal = 9999.99 WHERE c_custkey == 1
+UPDATE orders SET o_orderstatus = "F" WHERE o_orderkey == 1
+
+# ── DELETE ────────────────────────────────────────────────────────────────────
+DELETE FROM customer WHERE c_custkey == 99002
