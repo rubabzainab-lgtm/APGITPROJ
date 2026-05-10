@@ -439,7 +439,15 @@ void Executor::executeJoin(const char* t1, const char* t2, const char* t3, int p
     JoinOptimizer::JoinPlan plan = opt.optimize(t1, joinTbls, joinCnt, catalog_);
     opt.printPlan(plan);
 
-    // Execute join in MST order (nested loop join â€” simple, correct)
+    // LOG the MST decision
+    if (plan.tableCount == 3)
+        LOG_INFO("[LOG] Multi-table join routed via MST: %s -> %s -> %s",
+                 plan.orderedTables[0], plan.orderedTables[1], plan.orderedTables[2]);
+    else if (plan.tableCount == 2)
+        LOG_INFO("[LOG] Multi-table join routed via MST: %s -> %s",
+                 plan.orderedTables[0], plan.orderedTables[1]);
+
+    // Execute join in MST order (nested loop join – simple, correct)
     TableSchema s0, s1, s2;
     bool ok0 = catalog_.getSchema(plan.orderedTables[0], s0);
     bool ok1 = (plan.tableCount > 1) && catalog_.getSchema(plan.orderedTables[1], s1);
@@ -461,7 +469,6 @@ void Executor::executeJoin(const char* t1, const char* t2, const char* t3, int p
             if (ok1) {
                 int h1 = SystemCatalog::tableHash(s1.tableName);
                 int pg1Count = DiskManager::pageCount(s1.filePath);
-                // Join condition: customer.c_custkey == orders.o_custkey
                 int fk0 = (r0->getField(0) && r0->getField(0)->type()==FieldType::INT)
                           ? static_cast<IntField*>(r0->getField(0))->value() : -1;
 
@@ -473,7 +480,6 @@ void Executor::executeJoin(const char* t1, const char* t2, const char* t3, int p
                         int custkey = (r1->getField(1) && r1->getField(1)->type()==FieldType::INT)
                                       ? static_cast<IntField*>(r1->getField(1))->value() : -2;
                         if (custkey == fk0) {
-                            // Match! Print combined row.
                             char c0[32], c1[32], c2[32];
                             r0->getField(0)->toString(c0, 32);
                             r0->getField(1)->toString(c1, 32);
