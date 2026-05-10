@@ -1,0 +1,4 @@
+C:/Users/PMLS/Desktop/APGITPROJ/build/CMakeFiles/nanodb.dir
+C:/Users/PMLS/Desktop/APGITPROJ/build/CMakeFiles/test_runner.dir
+C:/Users/PMLS/Desktop/APGITPROJ/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/PMLS/Desktop/APGITPROJ/build/CMakeFiles/ZERO_CHECK.dir
